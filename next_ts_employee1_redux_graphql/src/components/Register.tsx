@@ -44,22 +44,22 @@ const Register = () => {
     };
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (!info.name) {
-            alert("이름은 필수입니다.")
-            return;
-        }
-        if (!info.age || Number(info.age) < 0) {
-            alert("나이는 필수입니다.")
-            return;
-        }
-        if (!info.pay || Number(info.pay) < 0) {
-            alert("급여는 필수입니다.")
-            return;
-        }
-        if (infos.some(item => item.name === info.name)) {
-            alert("이미 존재하는 이름입니다.")
-            return;
-        }
+        // if (!info.name) {
+        //     alert("이름은 필수입니다.")
+        //     return;
+        // }
+        // if (!info.age || Number(info.age) < 0) {
+        //     alert("나이는 필수입니다.")
+        //     return;
+        // }
+        // if (!info.pay || Number(info.pay) < 0) {
+        //     alert("급여는 필수입니다.")
+        //     return;
+        // }
+        // if (infos.some(item => item.name === info.name)) {
+        //     alert("이미 존재하는 이름입니다.")
+        //     return;
+        // }
 
         dispatch(fetchPostEmployeeInfo(info))
         setInfo(initialEmpInfo);

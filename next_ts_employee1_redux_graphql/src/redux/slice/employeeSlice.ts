@@ -80,7 +80,6 @@ const handleModeReducer = (
     }
     if(mod === 'reset'){
         if(confirm("목록을 초기 데이터로 되돌릴까요?")){
-            state.infos = []
             state.mode = "";
             state.upInfo= null;
             state.selectedId = null;
@@ -105,55 +104,30 @@ const handleSelectedIdReducer = (
     state.upInfo = state.infos.filter(info => info.id === id)[0] ?? null;
 }
 
-// const handleRegisterReducer = (
-//     state: EmployeeStateType,
-//     action: PayloadAction<EmployeeInfo>
-// ) => {
-//     const obj = action.payload;
-//     if (!obj.name) {
-//         alert("이름은 필수입니다.")
-//         return;
-//     }
-//     if (!obj.age || Number(obj.age) < 0) {
-//         alert("나이는 필수입니다.")
-//         return;
-//     }
-//     if (!obj.pay || Number(obj.pay) < 0) {
-//         alert("급여는 필수입니다.")
-//         return;
-//     }
-//     if (state.infos.some(item => item.name === obj.name)) {
-//         alert("이미 존재하는 이름입니다.")
-//         return;
-//     }
-//     const nextId = state.infos.length ? Math.max(...state.infos.map((i) => i.id)) + 1 : 1;
-//     state.infos = [...state.infos, {...obj, id: nextId}];
-// }
-
-// const handleUpgradeReducer = (
-//         state: EmployeeStateType,
-//         action: PayloadAction<EmployeeInfo>
-//     ) => {
-//     const obj = action.payload;
-//         if (Number(obj.age)<0){
-//             alert("나이는 0 이상입니다.")
-//             return;
-//         }
-//         if (Number(obj.pay)<0){
-//             alert("급여는 0 이상입니다.")
-//             return;
-//         }
-//         state.infos = [...state.infos].map(item =>
-//             item.id === obj.id ?
-//                 {...item,
-//                     age: obj.age,
-//                     job: obj.job,
-//                     language: obj.language,
-//                     pay: obj.pay,
-//                 } : item
-//         );
-//         state.mode = ''
-// }
+const handleRegisterReducer = (
+    state: EmployeeStateType,
+    action: PayloadAction<EmployeeInfo>
+) => {
+    const obj = action.payload;
+    if (!obj.name) {
+        alert("이름은 필수입니다.")
+        return;
+    }
+    if (!obj.age || Number(obj.age) < 0) {
+        alert("나이는 필수입니다.")
+        return;
+    }
+    if (!obj.pay || Number(obj.pay) < 0) {
+        alert("급여는 필수입니다.")
+        return;
+    }
+    if (state.infos.some(item => item.name === obj.name)) {
+        alert("이미 존재하는 이름입니다.")
+        return;
+    }
+    const nextId = state.infos.length ? Math.max(...state.infos.map((i) => i.id)) + 1 : 1;
+    state.infos = [...state.infos, {...obj, id: nextId}];
+}
 
 
 // thunk Slice 담기
@@ -162,7 +136,7 @@ const employeeSlice = createSlice({
     initialState,
     reducers:{
         handleMode: handleModeReducer,
-        // handleRegister: handleRegisterReducer,
+        handleRegister: handleRegisterReducer,
         // handleUpgrade: handleUpgradeReducer,
         handleSelectedId: handleSelectedIdReducer
     },
@@ -218,8 +192,26 @@ const employeeSlice = createSlice({
                             pay: obj.pay,
                         } : item
                 );
+                if(action.payload){
+                    state.mode = '';
+                }
             })
             .addCase(fetchPutEmployeeInfoById.rejected, (state, action) =>{
+                state.loading = false;
+                state.error = action.payload ?? "로드 실패";
+            })
+        builder
+            .addCase(fetchDeleteEmployeeInfoById.pending, (state) =>{
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchDeleteEmployeeInfoById.fulfilled, (state, action) =>{
+                const id = action.payload;
+                state.infos = [...state.infos].filter(item => item.id !== id);
+                state.loading = false;
+
+            })
+            .addCase(fetchDeleteEmployeeInfoById.rejected, (state, action) =>{
                 state.loading = false;
                 state.error = action.payload ?? "로드 실패";
             })
